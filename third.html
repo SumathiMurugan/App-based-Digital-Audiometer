@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Style for the banner container */
+        .banner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-bottom: 2px solid #ccc;
+        }
+
+        /* Style for the image on the left */
+        .banner img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px; /* Add some spacing between the image and content */
+            border-radius: 10px; /* Add border radius for rounded corners */
+        }
+
+        /* Style for the right side content */
+        .content {
+            text-align: center;
+        }
+
+        /* Style for the heading */
+        .content h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #115e59; /* Change heading text color */
+        }
+
+        /* Style for the paragraph */
+        .content p {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #666; /* Change paragraph text color */
+        }
+
+        /* Style for the button */
+        .content-button {
+           display: inline-block;
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color:#115e59;
+    color: white;
+    text-decoration: none;
+    border-top-right-radius: 30px; /* Added a semicolon here */
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hover effect for the button */
+        .content button:hover {
+            background-color: #0d9488;
+            transform: scale(1.1);
+        }
+
+        /* Style for the additional content container */
+        .additional-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Style for the individual sets of headings and paragraphs */
+        .additional-content div {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .additional-content div h1 {
+            font-size: 30px;
+            color: #115e59;
+        }
+
+        .additional-content div p {
+            font-size: 24px;
+            color: #666;
+        }
+
+        /* Media query for screens smaller than 600px (mobile) */
+        @media screen and (max-width: 600px) {
+            .banner img {
+                margin-right: 0; /* Remove the margin for the image on small screens */
+            }
+
+    .content-button {
+        font-size: 20px;
+        border-left-radius:30px;
+        padding:10px;
+            }
+
+            .content h1 {
+                font-size: 36px; /* Reduce heading font size for mobile */
+            }
+
+            .content p {
+                font-size: 24px; /* Reduce paragraph font size for mobile */
+            }
+
+            .additional-content div {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <img src="C:\Users\ELCOT\Documents\audiometer\banner.jpg" alt="Hearing Test">
+        <div class="content">
+            <h1>Hearing Test</h1>
+            <p>Check your hearing in just 3 minutes with our free online hearing test.</p>
+            <a href="register.html" class="content-button">Check your hearing</a>
+        </div>
+    </div>
+    <div class="additional-content">
+        <div>
+            <h1>Who the test is for</h1>
+            <p>The online hearing test is for people of all ages who have not been diagnosed with hearing loss.</p>
+        </div>
+        <div>
+            <h1>How it works</h1>
+            <p>The test measures how well you can hear beep sounds at certain frequencies.</p>
+        </div>
+        <div>
+            <h1>What you’ll get</h1>
+            <p>You’ll receive information about your hearing and a hearing test document. You can also consult a doctor if needed.</p>
+        </div>
+    </div>
+</body>
+</html>

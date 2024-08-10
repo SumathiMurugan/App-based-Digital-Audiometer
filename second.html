@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+      .container h1 {
+            color:#115e59;
+}
+        .left-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Style for the individual sets of headings and paragraphs */
+        .left-content div {
+            margin: 20px 0;
+        }
+
+        .left-content div img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .left-content div h1 {
+            font-size: 24px;
+            color: #115e59;
+            margin-top: 10px;
+        }
+
+        .left-content div p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* Media queries for responsiveness */
+        @media screen and (min-width: 768px) {
+            .left-content {
+                flex-direction: row;
+                justify-content: space-between; /* Increase space between items on large screens */
+            }
+
+            .left-content div {
+                flex: 1;
+                text-align: center;
+                margin: 0;
+                padding: 20px; /* Add padding around items on large screens */
+                border: 1px solid #ddd; /* Add borders around items on large screens */
+                border-radius: 5px; /* Add rounded corners on large screens */
+            }
+
+            .left-content div:hover {
+                background-color: #f0f0f0; /* Change background color on hover for large screens */
+            }
+
+            .left-content div h1 {
+                font-size: 24px;
+            }
+
+            .left-content div p {
+                font-size: 18px;
+            }
+        }
+
+        .next-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .next-button a {
+           display: inline-block;
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color:#115e59;
+            color: white;
+            text-decoration: none;
+            border-top-right-radius: 30px; /* Added a semicolon here */
+            transition: background-color 0.3s, transform 0.3s;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <center>
+        <h1>Before you begin</h1>
+    </center>
+    <div class="left-content">
+        <div>
+            <img src="C:\Users\ELCOT\Documents\audiometer\icon1.png" alt="Left Aligned Image">
+            <h1>Do you have tinnitus?</h1>
+            <p>You’ll hear constant white noise during the test. If you’ll find this uncomfortable, don’t take the test.</p>
+        </div>
+        <div>
+            <img src="C:\Users\ELCOT\Documents\audiometer\icon2.jpg" alt="Left Aligned Image">
+            <h1>Grab your headphones</h1>
+            <p>You’ll get a more accurate result if you use headphones or earphones rather than built-in speakers.</p>
+        </div>
+        <div>
+            <img src="C:\Users\ELCOT\Documents\audiometer\icon3.png" alt="Left Aligned Image">
+            <h1>Find a quiet place</h1>
+            <p>Take the hearing test somewhere you won’t be disturbed.Click the "Generate Audio" button.If you hear the sound, press "YES" else click cancel</p>
+        </div>
+    </div>
+    <div class="next-button">
+        <a href="third.html">Next</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Left ear checking</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0; /* Background color for the entire page */
+    }
+
+    #audiogramContainer {
+        text-align: center;
+        background-color: white; /* Background color for the audiogram container */
+        padding: 10px;
+        border-radius: 10px; /* Rounded corners for the container */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Box shadow for a subtle lift */
+    }
+
+    h1 {
+        background-color: #007bff; /* Blue color for the h1 tag */
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    #audiogramContainer {
+        text-align: center;
+    }
+
+    #audiogramCanvas {
+        background-color: #bbf7d0;
+        border: 1px solid blue;
+        margin: 30px;
+    }
+
+    #x-axis-label,
+    #y-axis-label,
+    .frequency-label,
+    .threshold-label {
+        font-size: 14px;
+        font-weight: bold;
+        fill: black;
+    }
+
+    /* X-axis line styling */
+    #x-axis-line,
+    #y-axis-line {
+        stroke: white;
+    }
+
+    /* Frequency label styling on x-axis */
+    .frequency-label {
+        font-size: 12px;
+    }
+
+    /* Threshold label styling on y-axis */
+    .threshold-label {
+        font-size: 12px;
+    }
+
+    #graph-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 20px;
+    }
+    #audiogramCanvas {
+        background-color: #bbf7d0;
+        border: 1px solid blue;
+        margin: 30px;
+    }
+
+    /* Add this CSS to make buttons round */
+    button {
+        border-radius: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin: 5px;
+    }
+    @media (max-width: 767px) {
+        h1 {
+            text-align: center;
+        }
+
+        /* Add a simple navigation bar */
+        nav {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        #audiogramContainer {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #graph-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        #audiogramCanvas {
+            background-color: #bbf7d0;
+            border: 1px solid blue;
+            margin: 10px;
+        }
+
+        
+    }
+        button {
+            border-radius: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        /* Media query for mobile styles */
+        @media (max-width: 767px) {
+            /* Your existing mobile styles */
+            /* ... */
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Pure Tone Audiometer</h1>
+        <div id="audiogramContainer">
+            <div id="graph-title">Audiogram</div>
+            <canvas id="audiogramCanvas" width="600" height="500"></canvas>
+        </div>
+    </center>
+
+    <script>
+        // Audiogram data
+        const frequencies = [0, 125, 250, 500, 1000, 2000, 4000, 8000];
+        const thresholds = [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]; // Reversed order
+
+        // Define the normal range threshold
+        const normalRangeThreshold = 10;
+
+        // Canvas setup
+        const canvas = document.getElementById('audiogramCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Function to draw a point on the canvas
+        function drawPoint(context, x, y, radius, color) {
+            context.fillStyle = color;
+            context.beginPath();
+            context.arc(x, y, radius, 0, 2 * Math.PI);
+            context.fill();
+        }
+
+        // Draw x-axis label
+        ctx.fillStyle = 'black'; // Change label color to black
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText('Frequency (Hz)', width / 2 - 50, height - 10);
+
+        // Draw y-axis label
+        ctx.save();
+        ctx.rotate(-Math.PI / 2);
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText('Hearing Threshold (dB)', -height / 2 - 60, 20);
+        ctx.restore();
+
+        // Draw x-axis
+        ctx.beginPath();
+        ctx.moveTo(50, height - 50);
+        ctx.lineTo(width - 50, height - 50);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+
+        // Draw y-axis
+        ctx.beginPath();
+        ctx.moveTo(50, height - 50);
+        ctx.lineTo(50, 50);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+
+        // Draw frequency labels on x-axis
+        for (let i = 0; i < frequencies.length; i++) {
+            const x = 50 + i * (width - 100) / (frequencies.length - 1);
+            ctx.fillText(frequencies[i] + ' Hz', x - 20, height - 30);
+        }
+
+        // Draw threshold labels on y-axis
+        for (let i = 0; i < thresholds.length; i++) {
+            const y = 50 + i * (height - 100) / (thresholds.length - 1);
+            ctx.fillText(thresholds[i] + ' dB', 20, y + 5);
+        }
+
+        // Draw a blue horizontal line at 100 dB
+        ctx.strokeStyle = 'blue';
+        ctx.lineWidth = 2;
+        const lineY = height - 50 - (100 - thresholds[0]) * (height - 100) / (thresholds[thresholds.length - 1] - thresholds[0]);
+        ctx.beginPath();
+        ctx.moveTo(50, lineY);
+        ctx.lineTo(width - 50, lineY);
+        ctx.stroke();
+
+        // Draw mild grid lines on the graph
+        ctx.strokeStyle = 'gray';
+        ctx.lineWidth = 0.5;
+
+        // Draw vertical grid lines
+        for (let i = 1; i < frequencies.length; i++) {
+            const x = 50 + i * (width - 100) / (frequencies.length - 1);
+            ctx.beginPath();
+            ctx.moveTo(x, 50);
+            ctx.lineTo(x, height - 50);
+            ctx.stroke();
+        }
+
+        // Draw horizontal grid lines
+        for (let i = 1; i < thresholds.length; i++) {
+            const y = 50 + i * (height - 100) / (thresholds.length - 1);
+            ctx.beginPath();
+            ctx.moveTo(50, y);
+            ctx.lineTo(width - 50, y);
+            ctx.stroke();
+        }
+    </script>
+    <div>
+    <button id="startButton">Start Audiometry</button>
+    <button id="stopButton" style="display: none;">Stop Audiometry</button>
+    <input type="text" id="frequencyIncrement" readonly>
+    <div id="doctorMessageBox" style="display: none;">
+        <p>Please visit a doctor.</p>
+        <button id="okButton">OK</button> 
+    </div>
+    <div id="doctor1" style="display: none;">
+            <p>You Are Normal.</p>
+
+        <button id="okButton">OK</button> 
+        
+    </div>
+    
+    <audio id="tonePlayer"></audio>
+</div>
+    <script>
+        // Configuration
+        const startFrequency = 0;  // Starting frequency in Hz
+        const endFrequency = 8000;   // Ending frequency in Hz
+        let stepFrequency = 25;     // Frequency step in Hz
+        const toneDuration = 0.5;      // Duration of each tone in seconds;
+
+        // Audio files associated with each frequency
+        const audioFiles = {
+            0: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            25: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+
+            50: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            75: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+
+            100: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            125: 'beep125.mp3',
+            150: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            175: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            225: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+
+            250: 'beep250.mp3',
+            275: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            300: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            325: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            350: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            375: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            425: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            450: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            475: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+
+            500: 'beep500.mp3',
+            525: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            550: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            575: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            625: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            650: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            675: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            700: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            725: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            750: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            775: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            825: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            850: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            875: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            900: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            925: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            950: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            975: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+
+            1000: 'beep1000.mp3',
+            
+            1200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            1400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+
+            1600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+
+            1800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            2000: 'beep2000.mp3',
+           
+            2200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            2400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            2600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            2800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            3000: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            3200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            3400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            3600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            3800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+
+            4000: 'beep4000.mp3',
+            
+            4200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            4400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            4600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            4800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            5000: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            5200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            5400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            5600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            5800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            6000: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            6200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            6400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            6600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            6800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            7000: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            7200: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            7400: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+            7600: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+           
+            7800: 'WhatsApp Audio 2023-09-17 at 9.50.46 AM.mp3',
+            
+
+
+            8000: 'beep8000.mp3',
+        };
+
+        // Initialize variables
+        let currentFrequency = startFrequency;
+        let isAudiometryRunning = false;
+
+        // Get HTML elements
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const frequencyIncrement = document.getElementById('frequencyIncrement');
+        const tonePlayer = document.getElementById('tonePlayer');
+        const doctorMessageBox = document.getElementById('doctorMessageBox');
+        const doctorMessageBox1 = document.getElementById('doctorMessageBox1');
+
+        const okButton = document.getElementById('okButton');
+
+        // Function to play the audio associated with the current frequency
+        function playAudioForCurrentFrequency() {
+            const audioFile = audioFiles[currentFrequency];
+            const pointX = 50 + (currentFrequency - startFrequency) * (width - 100) / (endFrequency - startFrequency);
+            const pointY = lineY; // Y-coordinate of the blue horizontal line
+            const pointSize = 10; // Size of the "X" symbol
+            const pointColor = 'blue';
+
+drawXSymbol(ctx, pointX, pointY, pointSize, pointColor);
+
+            if (audioFile) {
+                tonePlayer.src = audioFile;
+                tonePlayer.play();
+                tonePlayer.onended = function() {
+                    // Check for alert at 1000 Hz after audio has ended
+                    if (currentFrequency === 125) {
+                        const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OHERWISE CLICK CANCEL");
+                        if (!response) {
+                            // Show the "Please visit a doctor" message
+                            doctorMessageBox.style.display = 'block';
+                            return;
+                        }
+                        else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 120.5; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+                    }
+                    if (currentFrequency === 250) {
+    const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OTHERWISE CLICK CANCEL");
+    if (!response) {
+        // Show the "Please visit a doctor" message
+        doctorMessageBox.style.display = 'block';
+        return;
+    } else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 194; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+}
+
+                    if (currentFrequency === 500) {
+                        const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OHERWISE CLICK CANCEL");
+                        if (!response) {
+                            // Show the "Please visit a doctor" message
+                            doctorMessageBox.style.display = 'block';
+                            return;
+                        }
+                        else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 264.5; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+                    }
+                    if (currentFrequency === 1000) {
+                        const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OHERWISE CLICK CANCEL");
+                        if (!response) {
+                            // Show the "Please visit a doctor" message
+                            doctorMessageBox.style.display = 'block';
+                            return;
+                        }
+                        else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 334.5; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+                    }
+                    if (currentFrequency === 2000) {
+                        const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OHERWISE CLICK CANCEL");
+                        if (!response) {
+                            // Show the "Please visit a doctor" message
+                            doctorMessageBox.style.display = 'block';
+                            return;
+                        }
+                        else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 407.5; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+                    }
+                    if (currentFrequency === 4000) {
+                        const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OHERWISE CLICK CANCEL");
+                        if (!response) {
+                            // Show the "Please visit a doctor" message
+                            doctor1.style.display = 'block';
+                            return;
+                        }
+                        else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 490; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+                    }
+
+
+                    if (currentFrequency === 8000) {
+                        const response = confirm("IF YOU HEAR THE BEEP SOUND  CLICK ON OK TO CONTINUE OHERWISE CLICK CANCEL");
+                        if (!response) {
+                            // Show the "Plase visit a doctor" message
+                            doctor1.style.display = 'block';
+                            return;
+                        }
+                        else {
+        // Mark the point on the blue horizontal line for 125 Hz
+        const pointX = 50; // X-coordinate for the blue line (at the left edge)
+        const pointRadius = 5; // Adjust the radius of the point as needed
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(pointX, lineY, pointRadius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+                    }
+
+                    // Continue to the next frequency
+                    currentFrequency += stepFrequency;
+
+                    // Adjust the stepFrequency based on your needs
+                    // For example, you can increase the step frequency
+                    // based on specific conditions.
+                    if (currentFrequency > 975) {
+                        stepFrequency = 200; // Change the step frequency after 4000Hz
+                    }
+
+                    if (currentFrequency <= endFrequency) {
+                        frequencyIncrement.value = `${currentFrequency} Hz`;
+                        playAudioForCurrentFrequency();
+                    } else {
+                        // Test is complete
+                        stopAudiometry();
+                    }
+                };
+            }
+        }
+
+        // Function to start the audiometry
+        function startAudiometry() {
+            isAudiometryRunning = true;
+            startButton.style.display = 'none';
+            stopButton.style.display = 'inline-block';
+            playNextTone();
+        }
+
+        // Function to stop the audiometry
+        function stopAudiometry() {
+            isAudiometryRunning = false;
+            startButton.style.display = 'inline-block';
+            stopButton.style.display = 'none';
+            currentFrequency = startFrequency; // Reset frequency for next test
+            tonePlayer.pause();
+            tonePlayer.currentTime = 0;
+            frequencyIncrement.value = '';
+        }
+
+        // Function to play the first tone
+        function playNextTone() {
+            frequencyIncrement.value = `${currentFrequency} Hz`;
+            playAudioForCurrentFrequency();
+        }
+
+        // Function to handle the OK button click in the doctor message box
+        okButton.addEventListener('click', function() {
+            const pointX = 50 + (currentFrequency - startFrequency) * (width - 100) / (endFrequency - startFrequency);
+            const pointY = redLineY; // Y-coordinate of the red horizontal line
+            const pointSize = 10; // Size of the "X" symbol
+            const pointColor = 'red';
+
+drawXSymbol(ctx, pointX, pointY, pointSize, pointColor);
+            doctorMessageBox.style.display = 'none';
+            stopAudiometry();
+        });
+        
+        // Add click event listeners to the start and stop buttons
+        startButton.addEventListener('click', startAudiometry);
+        stopButton.addEventListener('click', stopAudiometry);
+    </script>
+    <script>
+   // Function to handle the OK button click in the doctor message box
+   okButton.addEventListener('click', function() {
+       // Hide the doctor message box
+       doctorMessageBox.style.display = 'none';
+   
+       // Mark the point on the red horizontal line
+       const pointX = 50 + (currentFrequency - startFrequency) * (width - 100) / (endFrequency - startFrequency);
+       const pointY = redLineY; // Y-coordinate of the red horizontal line
+       const pointRadius = 5; // Adjust the radius of the point as needed
+       ctx.fillStyle = 'red';
+       ctx.beginPath();
+       ctx.arc(pointX, pointY, pointRadius, 0, 2 * Math.PI);
+       ctx.fill();
+   
+       // Stop the audiometry
+       stopAudiometry();
+   });
+    // Function to draw an 'x' symbol on the canvas
+    function drawXSymbol(context, centerX, centerY, size, color) {
+    context.strokeStyle = color;
+    context.lineWidth = 2;
+
+    context.beginPath();
+    context.moveTo(centerX - size / 2, centerY - size / 2);
+    context.lineTo(centerX + size / 2, centerY + size / 2);
+    context.moveTo(centerX + size / 2, centerY - size / 2);
+    context.lineTo(centerX - size / 2, centerY + size / 2);
+    context.stroke();
+}
+
+
+        okButton.addEventListener('click', function() {
+            // Hide the doctor message box
+            doctorMessageBox.style.display = 'none';
+
+            // Mark the point on the graph with a point
+            const pointX = 50 + (currentFrequency - startFrequency) * (width - 100) / (endFrequency - startFrequency);
+            const pointY = redLineY; // Y-coordinate of the red horizontal line
+            const pointRadius = 5; // Adjust the radius of the point as needed
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(pointX, pointY, pointRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Stop the audiometry
+            stopAudiometry();
+        });
+    </script>
+    
+</body>
+</html>

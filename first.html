@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <title>Hearwell App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+       <h1 class="app-title animate__animated animate__bounce">
+            <span class="ear-icon"><i class="fas fa-ear"></i></span>
+            <span class="animated-letter">H<span class="animated-letter">e</span>arw<span class="animated-letter">e</span>ll</span>
+        </h1>
+        <img src="C:\Users\ELCOT\Documents\audiometer/test.png" alt="App Logo">
+        <h3 class="welcome-heading">Welcome to Hearwell</h3>
+        <p class="tagline">Hear better, Live better</p>
+        <a href="second.html" class="get-started-button"><b>Get Started</b></a>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+<style>
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #6366f1; /* Dark Gray background color */
+    color: #ffffff; /* White text color */
+    overflow: hidden;
+    position: relative;
+}
+
+.container {
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.app-title {
+    font-size: 48px;
+    font-family: 'Pacifico', cursive;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: bounce 2s infinite alternate, colorChange 5s infinite alternate;
+    color: white; /* Orange color */
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(5px);
+    }
+}
+
+
+
+@keyframes colorChange {
+    0%, 100% {
+        color: white;
+    }
+    25% {
+        color: white;
+    }
+    50% {
+        color: white;
+    }
+    75% {
+        color: white;
+    }
+}
+
+.welcome-heading {
+    font-size: 28px;
+    color: #67e8f9;
+}
+
+.tagline {
+    font-size: 18px;
+    color: #ffffff;
+    font-style: italic;
+}
+
+.animated-letter {
+    display: inline-block;
+    animation: bounce 1s infinite alternate;
+}
+
+.get-started-button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #67e8f9;
+    color: #0e7490;
+    text-decoration: none;
+    border-top-right-radius: 30px; /* Added a semicolon here */
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.get-started-button:hover {
+    background-color: #a5f3fc;
+    transform: scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        background-color: #6366f1;
+    }
+    .app-title {
+        font-size: 36px;
+    }
+    .welcome-heading {
+        font-size: 24px;
+    }
+    .tagline {
+        font-size: 16px;
+    }
+    .get-started-button {
+        font-size: 20px;
+        border-left-radius:30px;
+    }
+    .zoom-image {
+        max-width: 150px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    body {
+        background-color: #6366f1;
+    }
+    .app-title {
+        font-size: 30px;
+    }
+    .welcome-heading {
+        font-size: 20px;
+    }
+    .tagline {
+        font-size: 14px;
+    }
+    .get-started-button {
+        font-size: 18px;
+        border-left-radius:30px;
+    }
+    .zoom-image {
+        max-width: 120px;
+    }
+}
+.ear-icon {
+    margin-right: 10px; /* Adjust the margin to position the ear icon as needed */
+    color: white; /* Color of the ear icon */
+}
+</style>
+</html>
